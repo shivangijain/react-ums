@@ -1,0 +1,65 @@
+.main_container h6 a {
+  color: white;
+  text-decoration: none;
+}
+
+.landing_container {
+    text-align: center;
+}
+
+.landing_container > div{
+  color: #3f51b5;
+  text-align: center;
+  padding-top: 13%;
+  font-size: 35px;
+}
+
+.landing_container > p{
+  font-size: 20px;
+}
+
+#simple-menu .MuiPopover-paper{
+  top: 64px !important;
+}
+.main_container .MuiToolbar-gutters > button {
+      padding-right: 250px;
+}
+
+.MuiMenuItem-root > svg {
+  display: none;
+}
+
+.main_container .MuiGrid-spacing-xs-3 {
+    width: 100%;
+    margin: 0 auto;
+    max-width:1250px;
+    padding-bottom: 100px;
+}
+
+.main_container .category_container ,  .main_container .landing_container{
+  background: #cccccc47;
+  min-height: calc(100vh - 64px);
+}
+.MuiGrid-container .MuiTypography-gutterBottom {
+    margin-bottom: 0;
+    padding: 15px;
+    text-align: center;
+}
+.MuiGrid-container .MuiCardContent-root {
+    padding: 0;
+}
+nav.MuiTypography-root.MuiBreadcrumbs-root.MuiTypography-body1.MuiTypography-colorTextSecondary {
+    max-width: 1218px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 18px;
+}
+.MuiCardMedia-media {
+    width: auto;
+    margin: 0 auto;
+}
+.MuiPaper-elevation1 img {
+    width: auto;
+    margin: 0 auto;
+}
