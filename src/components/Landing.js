@@ -55,6 +55,56 @@ const useStyles = makeStyles({
   }
 });
 
+const renderSwitch = (name, onChange, classes, editableUser) => {
+  switch(name){
+    case 'email':
+    case 'last_name':
+    case 'first_name':
+      return <Input
+        value={editableUser[name]}
+        name={name}
+        onChange={e => onChange(e, editableUser)}
+        className={classes.input}
+      />
+    case 'status':
+      return <FormControlLabel
+        control={
+          <Checkbox
+            checked={editableUser[name] === 'Active' || false}
+            onChange={e => onChange(e, editableUser)}
+            name={name}
+            color="primary"
+          />
+        }
+        label="Active"
+      />
+    case 'dob':
+      return  <Input
+      type='date'
+      value={editableUser[name]}
+      name={name}
+      onChange={e => onChange(e, editableUser)}
+      className={classes.input}
+    />
+    default:
+      return null;
+  }
+}
+
+const CustomTableCell = ({ user, name, onChange, editableUser }) => {
+  const classes = useStyles();
+  const { isEditMode } = user;
+  return (
+    <TableCell align="left" >
+      {isEditMode && editableUser ? 
+        renderSwitch(name, onChange, classes, editableUser)         
+       : (
+        user[name] || 'NA'
+      )}
+    </TableCell>
+  );
+};
+
 const Landing = (props) => {
   const classes = useStyles();
 
@@ -90,53 +140,7 @@ const Landing = (props) => {
     setEditableUser(newUser)
   }
 
-  const renderSwitch = (name, onChange) => {
-    switch(name){
-      case 'email':
-      case 'last_name':
-      case 'first_name':
-        return <Input
-          value={editableUser[name]}
-          name={name}
-          onChange={e => onChange(e, editableUser)}
-          className={classes.input}
-        />
-      case 'status':
-        return <FormControlLabel
-          control={
-            <Checkbox
-              checked={editableUser[name] === 'Active' || false}
-              onChange={e => onChange(e, editableUser)}
-              name={name}
-              color="primary"
-            />
-          }
-          label="Active"
-        />
-      case 'dob':
-        return  <Input
-        type='date'
-        value={editableUser[name]}
-        name={name}
-        onChange={e => onChange(e, editableUser)}
-        className={classes.input}
-      />
-    }
-  }
-
-  const CustomTableCell = ({ user, name, onChange }) => {
-    const classes = useStyles();
-    const { isEditMode } = user;
-    return (
-      <TableCell align="left" >
-        {isEditMode && editableUser ? 
-          renderSwitch(name, onChange)         
-         : (
-          user[name] || 'NA'
-        )}
-      </TableCell>
-    );
-  };
+  
 
 	const {page, rowsPerPage} = props
   return (
@@ -162,7 +166,7 @@ const Landing = (props) => {
                   {columns.map((column) => {
                     const value = user[column.id];
                     return (
-                      <CustomTableCell {...{ user, name: column.id, onChange }} key={column.id}/>
+                      <CustomTableCell {...{ user, name: column.id, onChange, editableUser }} key={column.id}/>
                     );
                   })}
 									<TableCell key='action'>
