@@ -34,8 +34,14 @@ const User = (props) => {
 								{`${user.first_name} ${user.last_name}`}
 							</Typography>
 							<Typography style={{textAlign: 'center'}} >
-								{user.email}
+								<b>Email:</b> {user.email}
 							</Typography>
+							{user.status && <Typography style={{textAlign: 'center'}} >
+								<b>Status:</b> {user.status || 'Inactive'}
+							</Typography>}
+							{user.dob && <Typography style={{textAlign: 'center'}} >
+								<b>Date:</b> {user.dob}
+							</Typography>}
 						</CardContent>
 					</CardActionArea>
 				</Card>}

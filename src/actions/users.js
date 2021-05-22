@@ -1,4 +1,4 @@
-import {FETCH_USERS, REJECT_USERS, FETCH_USER, API_URL, SET_PAGE, SET_ROWS_PER_PAGE} from '../constants';
+import {FETCH_USERS, REJECT_USERS, FETCH_USER, API_URL, SET_PAGE, SET_ROWS_PER_PAGE, TOGGLE_USER_EDIT} from '../constants';
 import axios from 'axios';
 
 const fetchUsers = (response) => {
@@ -11,6 +11,13 @@ const fetchUsers = (response) => {
 const fetchUser = (user) => {
 	return {
 		type: FETCH_USER,
+		user
+	}
+};
+
+const toggleUserEdit = (user) => {
+	return {
+		type: TOGGLE_USER_EDIT,
 		user
 	}
 };
@@ -45,4 +52,9 @@ export const setPage = (page) => (dispatch, getState) => {
 export const setRowsPerPage = (rowsPerPage) => (dispatch, getState) => {
 	return dispatch({type: SET_ROWS_PER_PAGE, rowsPerPage})
 }
+
+export const toggleEditMode = (user) => (dispatch, getState) => {
+	return dispatch(toggleUserEdit(user))
+}
+
 

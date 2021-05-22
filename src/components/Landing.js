@@ -9,9 +9,15 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
+import IconButton from "@material-ui/core/IconButton";
 import { useStore } from 'react-redux';
+import EditIcon from "@material-ui/icons/EditOutlined";
+import DoneIcon from "@material-ui/icons/DoneAllTwoTone";
+import Input from "@material-ui/core/Input";
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import { Link } from 'react-router-dom';
-import { setPage, setRowsPerPage } from '../actions';
+import { setPage, setRowsPerPage, toggleEditMode } from '../actions';
 const columns = [
   { id: 'first_name', label: 'First Name' },
   {
@@ -22,6 +28,14 @@ const columns = [
     id: 'email',
     label: 'Email',
   },
+  {
+    id: 'status',
+    label: 'Status'
+  },
+  {
+    id: 'dob',
+    label: 'DOB'
+  }
   
 ];
 
@@ -32,13 +46,19 @@ const useStyles = makeStyles({
   container: {
     maxHeight: 440,
   },
+  table: {
+    minWidth: 650
+  },
+  input: {
+    width: 130,
+    height: 40
+  }
 });
 
 const Landing = (props) => {
   const classes = useStyles();
 
-  // const [page, setPage] = React.useState(0);
-  // const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [editableUser, setEditableUser] = React.useState(null);
 	const store = useStore().getState();
 	const users = store.usersList.users || []
 
@@ -52,12 +72,77 @@ const Landing = (props) => {
     props.setPage(0);
   };
 
-	const {page, rowsPerPage} = props
+  const onToggleEditMode = (user, type) => {
+    type === 'edit' && setEditableUser(user)
+    props.toggleEditMode(user);
+  }
 
+  const onChange = (e, user) => {
+    const name = e.target.name;
+    let value = ''
+    if(name === 'status'){
+      value = e.target.checked ? 'Active' : 'Inactive'
+    }else{
+      value = e.target.value;
+    }
+    
+    const newUser = {...user, [name]: value}
+    setEditableUser(newUser)
+  }
+
+  const renderSwitch = (name, onChange) => {
+    switch(name){
+      case 'email':
+      case 'last_name':
+      case 'first_name':
+        return <Input
+          value={editableUser[name]}
+          name={name}
+          onChange={e => onChange(e, editableUser)}
+          className={classes.input}
+        />
+      case 'status':
+        return <FormControlLabel
+          control={
+            <Checkbox
+              checked={editableUser[name] === 'Active' || false}
+              onChange={e => onChange(e, editableUser)}
+              name={name}
+              color="primary"
+            />
+          }
+          label="Active"
+        />
+      case 'dob':
+        return  <Input
+        type='date'
+        value={editableUser[name]}
+        name={name}
+        onChange={e => onChange(e, editableUser)}
+        className={classes.input}
+      />
+    }
+  }
+
+  const CustomTableCell = ({ user, name, onChange }) => {
+    const classes = useStyles();
+    const { isEditMode } = user;
+    return (
+      <TableCell align="left" >
+        {isEditMode && editableUser ? 
+          renderSwitch(name, onChange)         
+         : (
+          user[name] || 'NA'
+        )}
+      </TableCell>
+    );
+  };
+
+	const {page, rowsPerPage} = props
   return (
     <Paper className={classes.root}>
       <TableContainer className={classes.container}>
-        <Table stickyHeader aria-label="sticky table">
+        <Table className={classes.table} stickyHeader aria-label="caption table">
           <TableHead>
 						<TableRow>
               {columns.map((column) => (
@@ -67,23 +152,37 @@ const Landing = (props) => {
 									{column.label}
 								</TableCell>
               ))}
-							<TableCell/>
+							<TableCell>Action</TableCell>
 						</TableRow>
           </TableHead>
           <TableBody>
-            {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user, index) => {
+            {users && users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user, index) => {
               return (
                 <TableRow hover role="checkbox" tabIndex={-1} key={user.email}>
                   {columns.map((column) => {
                     const value = user[column.id];
                     return (
-                      <TableCell key={column.id} >
-                        {value}
-                      </TableCell>
+                      <CustomTableCell {...{ user, name: column.id, onChange }} key={column.id}/>
                     );
                   })}
-									<TableCell>
+									<TableCell key='action'>
+                    {user.isEditMode ? (
+                      <IconButton
+                        aria-label="done"
+                        onClick={() => onToggleEditMode(editableUser, 'save')}
+                      >
+                        <DoneIcon />
+                      </IconButton>
+                    ) : (
+                      <IconButton
+                        aria-label="edit"
+                        onClick={() => onToggleEditMode(user, 'edit')}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    )}
 										<Link to={`/user/${user.id}`}>View</Link>
+
 									</TableCell>
                 </TableRow>
               );
@@ -107,7 +206,8 @@ const Landing = (props) => {
 const mapDispatchToProps = dispatch => {
   return {
     setPage: (page) => dispatch(setPage(page)),
-		setRowsPerPage: (rowsPerPage) => dispatch(setRowsPerPage(rowsPerPage))
+		setRowsPerPage: (rowsPerPage) => dispatch(setRowsPerPage(rowsPerPage)),
+    toggleEditMode: (user) => dispatch(toggleEditMode(user))
   }
 }
 
@@ -119,3 +219,4 @@ const mapStateToProps = state => {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Landing);
+
